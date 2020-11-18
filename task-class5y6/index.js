@@ -26,9 +26,9 @@ const fs = require("fs")
 const path = require("path")
 
 
-const absoultePath = path.join(__dirname, "tasks.json")
+const ruta = path.join(__dirname, "tasks.json")
 
-const tasksJSON = fs.readFileSync(absoultePath , {encoding:"utf-8"})
+const tasksJSON = fs.readFileSync(ruta , {encoding:"utf-8"})
 
 const tasks = JSON.parse(tasksJSON)
 
@@ -60,9 +60,38 @@ function showPending(){
 
 }
 
-const param = process.argv[2];
 
-switch (param) {
+function toggle(taskIndex) {
+  const task = tasks[taskIndex];
+  task.done = !task.done; //esta es la tarea que quiero editar
+  showAll();
+  save();
+}
+
+function add(name, deadline) {
+  const newtask = {
+    name: name,
+    deadline: deadline,
+    done: false,
+  };
+  tasks.push(newtask);
+  showAll();
+  save();
+}
+
+function save() {
+  const tasksJSON = JSON.stringify(tasks, null, 2); 
+  fs.writeFileSync(ruta, tasksJSON);
+}
+
+const argumentoArray = process.argv; //argumenos vector
+const tercerParametro = argumentoArray[2];
+const cuartoParametro = argumentoArray[3];
+const quintoParametro = argumentoArray[4];
+
+
+
+switch (tercerParametro) {
   case "all":
     showAll();
     break;
@@ -72,6 +101,11 @@ switch (param) {
   case "pending":
     showPending();
     break;
+    case "toggle":
+      toggle(cuartoParametro);
+    break;
+    case "add":
+      add(cuartoParametro, quintoParametro)
   default:
     console.log("Los parametros aceptados son: 'all', 'done' y 'pending'");
 }
